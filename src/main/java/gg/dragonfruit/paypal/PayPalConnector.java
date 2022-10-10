@@ -10,30 +10,10 @@ import gg.dragonfruit.paypal.http.MimeType;
 
 public class PayPalConnector {
 
-    public boolean isPaymmentSuccess(String paymentId)
+    public Payment getPayment(String paymentId)
             throws MalformedURLException, IOException {
-        String url = getUrl("/v1/payments/payment/" + paymentId);
-        String response = doGetCall(url);
-
-        if (response == null) {
-            return false;
-        }
-
-        JSONObject paymentObject = new JSONObject(response);
-
-        JSONObject info = paymentObject.getJSONObject("transaction_info");
-
-        if (info == null) {
-            return false;
-        }
-
-        String status = info.getString("transaction_status");
-
-        if (!status.equalsIgnoreCase("S")) {
-            return false;
-        }
-
-        return true;
+        String response = doGetCall(getUrl("/v1/payments/payment/" + paymentId));
+        return response == null ? null : new Payment(new JSONObject(response));
     }
 
     private String doGetCall(String url)
